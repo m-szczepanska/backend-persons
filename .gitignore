@@ -13,3 +13,9 @@
 
 # env variables
 .env_file
+
+# sqlite
+*.db
+
+# pytest
+.pytest_cache
