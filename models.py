@@ -25,7 +25,7 @@ class Location(BaseModel):
     city = CharField()
     state = CharField()
     country = CharField()
-    postcode = IntegerField()
+    postcode = CharField()
     latitude = CharField()
     longitude = CharField()
     offset = CharField()
@@ -49,10 +49,10 @@ class Person(BaseModel):
     sha256 = CharField()
     date_registered = DateTimeField()
     age_registered = IntegerField()
-    phone = CharField()
+    phone = IntegerField()
     cell = CharField()
-    id_name = CharField()
-    id_value = CharField()
+    id_name = CharField(null=True)
+    id_value = CharField(null=True)
     nat = CharField()
     days_left_to_birthday = IntegerField(default=0)
     location = ForeignKeyField(
@@ -65,20 +65,37 @@ class Person(BaseModel):
     def get_days_left_to_birthday(self):
         now = datetime.now()
         if now.month > self.date_dob.month:
-
-            next_birthday = datetime(
-                now.year + 1,
-                self.date_dob.month,
-                self.date_dob.day,
-                self.date_dob.hour,
-            )
+            try:
+                next_birthday = datetime(
+                    now.year + 1,
+                    self.date_dob.month,
+                    self.date_dob.day,
+                    self.date_dob.hour,
+                )
+            # Hack for people born on 29/02 - in not a leap year they
+            # celebrate birthday one day earlier
+            except ValueError:
+                next_birthday = datetime(
+                    now.year + 1,
+                    self.date_dob.month,
+                    self.date_dob.day -1,
+                    self.date_dob.hour,
+                )
         else:
-            next_birthday = datetime(
-                now.year,
-                self.date_dob.month,
-                self.date_dob.day,
-                self.date_dob.hour,
-            )
+            try:
+                next_birthday = datetime(
+                    now.year,
+                    self.date_dob.month,
+                    self.date_dob.day,
+                    self.date_dob.hour,
+                )
+            except ValueError:
+                next_birthday = datetime(
+                    now.year + 1,
+                    self.date_dob.month,
+                    self.date_dob.day -1,
+                    self.date_dob.hour,
+                )
         return (next_birthday - now).days
 
     def save(self, force_insert=False, only=None):

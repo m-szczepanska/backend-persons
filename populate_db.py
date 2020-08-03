@@ -1,50 +1,92 @@
 import datetime
+import json
 
 from models import Person, Location
 
 
-def create_location():
-    new_location = Location.create(
-        flat='',
-        street_number=12,
-        street_name='penny lane',
-        city='oslo',
-        state='status',
-        country='poland',
-        postcode=52235,
-        latitude='2.0565',
-        longitude='95.2422',
-        offset='+1:00',
-        description='a nice location'
+def populate_location(person):
+    try:
+        flat=person['location']['street']['flat']
+    except KeyError:
+        flat = ''
+    person_location = Location.create(
+        flat=flat,
+        street_number=int(person['location']['street']['number']),
+        street_name=person['location']['street']['name'],
+        city=person['location']['city'],
+        state=person['location']['state'],
+        country=person['location']['country'],
+        postcode=person['location']['postcode'],
+        latitude=person['location']['coordinates']['latitude'],
+        longitude=person['location']['coordinates']['longitude'],
+        offset=person['location']['timezone']['offset'],
+        description=person['location']['timezone']['description']
     )
-    return new_location
+    return person_location
 
-
-def create_test_person(location=None):
-    if not location:
-        location = create_location()
+def populate_person(person, phone_num, person_location=None):
+    if not person_location:
+        person_location = populate_location(person)
     new_person = Person.create(
-        gender='female',
-        title='Miss',
-        first_name='Louane',
-        last_name='Vidal',
-        email='louane.vidal@example.com',
-        date_dob=datetime.datetime(1966, 6, 26, 11, 50, 25, 558000),
-        age_dob=54,
-        uuid='9f07341f-c7e6-45b7-bab0-af6de5a4582d',
-        username='angryostrich988',
-        password='r2d2',
-        salt='B5ywSDUM',
-        md5='afce5fbe8f32bcec1a918f75617ab654',
-        sha1='1a5b1afa1d9913cf491af64ce78946d18fea6b04',
-        sha256='1a5b1afa1d9913cf491af64ce78946d18fea6b04',
-        date_registered=datetime.datetime(1969, 6, 26, 11, 50, 25, 558000),
-        age_registered=3,
-        phone=666777888,
-        cell=45454,
-        id_name='INSEE',
-        id_value='fd7s9f',
-        nat='FR',
-        location_id=location.id
+        gender=person['gender'],
+        title=person['name']['title'],
+        first_name=person['name']['first'],
+        last_name=person['name']['last'],
+        email=person['email'],
+        uuid=person['login']['uuid'],
+        username=person['login']['username'],
+        password=person['login']['password'],
+        salt=person['login']['salt'],
+        md5=person['login']['md5'],
+        sha1=person['login']['sha1'],
+        sha256=person['login']['sha256'],
+        date_dob=datetime.datetime(
+            int(person['dob']['date'][:4]),
+            int(person['dob']['date'][5:7]),
+            int(person['dob']['date'][8:10]),
+            int(person['dob']['date'][11:13]),
+            int(person['dob']['date'][14:16]),
+            int(person['dob']['date'][17:19]),
+            int(person['dob']['date'][20:-1])
+        ),
+        age_dob=int(person['dob']['age']),
+        date_registered=datetime.datetime(
+            int(person['registered']['date'][:4]),
+            int(person['registered']['date'][5:7]),
+            int(person['registered']['date'][8:10]),
+            int(person['registered']['date'][11:13]),
+            int(person['registered']['date'][14:16]),
+            int(person['registered']['date'][17:19]),
+            int(person['registered']['date'][20:-1])
+        ),
+        age_registered=int(person['registered']['age']),
+        phone=phone_num,
+        cell=person['cell'],
+        id_name=person['id']['name'],
+        id_value=person['id']['value'],
+        nat=person['nat'],
+        location=person_location
     )
     return new_person
+
+def normalize_phone_num(person):
+    phone_num = person['phone']
+    if not phone_num.isdigit():
+        phone_num = int(''.join([x for x in phone_num if x.isdigit()]))
+    return phone_num
+
+def create_fields():
+    with open('data/persons.json') as file:
+        data = json.load(file)
+        persons_fields = data['results']
+
+        for person in persons_fields:
+            print(person['name'])
+            phone_num = normalize_phone_num(person)
+            new_person = populate_person(
+                person,
+                phone_num,
+                person_location=None
+            )
+
+create_fields()
