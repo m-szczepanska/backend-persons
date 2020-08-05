@@ -11,7 +11,7 @@ re_pattern_lowercase = r'[a-z]+'
 re_pattern_digit = r'[0-9]+'
 
 
-def get_best_passwords():
+def get_all_passwords_points():
     persons = Person.select()
     pass_set = set([person.password for person in persons])
     password_points = {}
@@ -37,6 +37,8 @@ def count_points_in_password(password):
         points += 1
     return points
 
-best_passwords = get_best_passwords()
-max_points = max(best_passwords.keys())
-print(max_points, best_passwords[max_points])
+
+def get_best_passwords():
+    best_passwords = get_all_passwords_points()
+    max_points = max(best_passwords.keys())
+    print(f'{max_points} points passwords: {best_passwords[max_points]}')

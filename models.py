@@ -7,7 +7,7 @@ from peewee import (
     SqliteDatabase,
 )
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 sqlite_db = SqliteDatabase('people.db', autocommit=True)
@@ -61,6 +61,8 @@ class Person(BaseModel):
         unique=True,
         null=True
     )
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
     def get_days_left_to_birthday(self):
         now = datetime.now()
