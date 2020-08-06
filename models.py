@@ -1,3 +1,4 @@
+from dateutil.relativedelta import relativedelta
 from peewee import (
     CharField,
     DateTimeField,
@@ -7,7 +8,7 @@ from peewee import (
     SqliteDatabase,
 )
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 sqlite_db = SqliteDatabase('people.db', autocommit=True)
@@ -19,7 +20,7 @@ class BaseModel(Model):
 
 
 class Location(BaseModel):
-    flat = CharField(null=True)  # in case people would live in flats as well
+    flat = CharField(null=True)
     street_number = IntegerField()
     street_name = CharField()
     city = CharField()
@@ -66,38 +67,16 @@ class Person(BaseModel):
 
     def get_days_left_to_birthday(self):
         now = datetime.now()
-        if now.month > self.date_dob.month:
-            try:
-                next_birthday = datetime(
-                    now.year + 1,
-                    self.date_dob.month,
-                    self.date_dob.day,
-                    self.date_dob.hour,
-                )
-            # Hack for people born on 29/02 - in not a leap year they
-            # celebrate birthday one day earlier
-            except ValueError:
-                next_birthday = datetime(
-                    now.year + 1,
-                    self.date_dob.month,
-                    self.date_dob.day -1,
-                    self.date_dob.hour,
-                )
+        birthday_this_year = datetime(
+            now.year,
+            self.date_dob.month,
+            self.date_dob.day
+        )
+        if now > birthday_this_year:
+            next_birthday = birthday_this_year + relativedelta(year=1)
         else:
-            try:
-                next_birthday = datetime(
-                    now.year,
-                    self.date_dob.month,
-                    self.date_dob.day,
-                    self.date_dob.hour,
-                )
-            except ValueError:
-                next_birthday = datetime(
-                    now.year + 1,
-                    self.date_dob.month,
-                    self.date_dob.day -1,
-                    self.date_dob.hour,
-                )
+            next_birthday = birthday_this_year
+
         return (next_birthday - now).days
 
     def save(self, force_insert=False, only=None):
@@ -108,3 +87,4 @@ class Person(BaseModel):
         # days_left_to_birthday field
         self.days_left_to_birthday = self.get_days_left_to_birthday()
         super().save()
+
