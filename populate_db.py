@@ -25,6 +25,7 @@ def populate_location(person):
     )
     return person_location
 
+
 def populate_person(person, phone_num, person_location=None):
     if not person_location:
         person_location = populate_location(person)
@@ -43,7 +44,9 @@ def populate_person(person, phone_num, person_location=None):
         sha256=person['login']['sha256'],
         date_dob=datetime.fromisoformat(person['dob']['date'][:10]),
         age_dob=int(person['dob']['age']),
-        date_registered=datetime.fromisoformat(person['registered']['date'][:10]),
+        date_registered=datetime.fromisoformat(
+            person['registered']['date'][:10]
+        ),
         age_registered=int(person['registered']['age']),
         phone=phone_num,
         cell=person['cell'],
@@ -52,8 +55,8 @@ def populate_person(person, phone_num, person_location=None):
         nat=person['nat'],
         location=person_location
     )
-    import pdb; pdb.set_trace()
     return new_person
+
 
 def normalize_phone_num(person):
     phone_num = person['phone']
@@ -61,18 +64,19 @@ def normalize_phone_num(person):
         phone_num = int(''.join([x for x in phone_num if x.isdigit()]))
     return phone_num
 
+
 def create_fields():
     with open('data/persons.json') as file:
         data = json.load(file)
         persons_fields = data['results']
 
         for person in persons_fields:
-            print(person['name'])
             phone_num = normalize_phone_num(person)
-            new_person = populate_person(
+            populate_person(
                 person,
                 phone_num,
                 person_location=None
             )
+
 
 create_fields()

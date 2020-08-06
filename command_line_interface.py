@@ -2,8 +2,6 @@ import argparse
 from collections import Counter
 from datetime import datetime
 
-import re
-
 from models import Person, Location
 from calculate_password_points import get_best_passwords
 
@@ -172,16 +170,14 @@ parser_best_password = subparsers.add_parser(
 parser_best_password.set_defaults(func=get_best_passwords)
 
 
-
 options = parser.parse_args()
 
 if options.func.__name__ in [
     'show_people_born_before_and_after_date',
     'show_people_born_between_dates'
-    ]:
+]:
     options.func(options.date_before, options.date_after)
-elif options.func.__name__ in ['most_common_password','most_popular_cities']:
+elif options.func.__name__ in ['most_common_password', 'most_popular_cities']:
     options.func(options.n)
 else:
     options.func()
-

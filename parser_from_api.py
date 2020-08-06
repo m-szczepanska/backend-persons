@@ -1,11 +1,7 @@
-import re
-
-from datetime import datetime, date, timedelta
 from requests import get
 import json
 
-from models import Person, Location
-from populate_db import normalize_phone_num, populate_person, populate_location
+from populate_db import normalize_phone_num, populate_person
 
 
 def parse_data_from_api():
@@ -20,12 +16,12 @@ def parse_data_from_api():
     persons_fields = data['results']
 
     for person in persons_fields:
-        print(person['name'])
         phone_num = normalize_phone_num(person)
-        new_person = populate_person(
+        populate_person(
             person,
             phone_num,
             person_location=None
         )
+
 
 parse_data_from_api()

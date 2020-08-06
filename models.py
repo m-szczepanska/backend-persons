@@ -62,6 +62,7 @@ class Person(BaseModel):
         unique=True,
         null=True
     )
+
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
@@ -87,4 +88,3 @@ class Person(BaseModel):
         # days_left_to_birthday field
         self.days_left_to_birthday = self.get_days_left_to_birthday()
         super().save()
-
