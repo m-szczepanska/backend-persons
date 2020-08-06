@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 
 from models import Person, Location
@@ -6,6 +6,7 @@ from models import Person, Location
 
 def populate_location(person):
     try:
+        # in case people would live in flats as well
         flat=person['location']['street']['flat']
     except KeyError:
         flat = ''
@@ -40,25 +41,9 @@ def populate_person(person, phone_num, person_location=None):
         md5=person['login']['md5'],
         sha1=person['login']['sha1'],
         sha256=person['login']['sha256'],
-        date_dob=datetime.datetime(
-            int(person['dob']['date'][:4]),
-            int(person['dob']['date'][5:7]),
-            int(person['dob']['date'][8:10]),
-            int(person['dob']['date'][11:13]),
-            int(person['dob']['date'][14:16]),
-            int(person['dob']['date'][17:19]),
-            int(person['dob']['date'][20:-1])
-        ),
+        date_dob=datetime.fromisoformat(person['dob']['date'][:10]),
         age_dob=int(person['dob']['age']),
-        date_registered=datetime.datetime(
-            int(person['registered']['date'][:4]),
-            int(person['registered']['date'][5:7]),
-            int(person['registered']['date'][8:10]),
-            int(person['registered']['date'][11:13]),
-            int(person['registered']['date'][14:16]),
-            int(person['registered']['date'][17:19]),
-            int(person['registered']['date'][20:-1])
-        ),
+        date_registered=datetime.fromisoformat(person['registered']['date'][:10]),
         age_registered=int(person['registered']['age']),
         phone=phone_num,
         cell=person['cell'],
@@ -67,6 +52,7 @@ def populate_person(person, phone_num, person_location=None):
         nat=person['nat'],
         location=person_location
     )
+    import pdb; pdb.set_trace()
     return new_person
 
 def normalize_phone_num(person):
