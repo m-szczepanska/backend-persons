@@ -3,9 +3,9 @@ import re
 from models import Person
 
 
-re_pattern_12 = r'^(?=.{8,15}$)(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*]).*$'
+# Special chars list: https://randomuser.me/documentation#format
+re_pattern_special_char = r'[!"#$%&()\*\+\,\- \./:;<=>?@[\]\^_`\{\|\}~]+'
 re_pattern_length_8 = r'.{8,}'
-re_pattern_special_char = r'[!@#$%^&*]+'
 re_pattern_uppercase = r'[A-Z]+'
 re_pattern_lowercase = r'[a-z]+'
 re_pattern_digit = r'[0-9]+'
