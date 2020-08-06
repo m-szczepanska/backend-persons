@@ -31,14 +31,11 @@
 * Show 'N' most common passwords
 `python command_line_interface.py most_common_password N`
 
-* Show people born before date X and after date Y (dates in format XXXX-MM-DD)
-`python command_line_interface.py show_people_born_before_and_after_date X Y`
+* Show people born before date A and after date B (dates in format XXXX-MM-DD)
+`python command_line_interface.py show_people_born_before_and_after_date A B`
 
-* Show people born beetwen dates X and Y (dates in format XXXX-MM-DD)
-`python command_line_interface.py show_people_born_between_dates X Y`
-
-* Show people born beetwen dates Y and X (dates in format XXXX-MM-DD)
-`python command_line_interface.py show_people_born_between_dates Y X`
+* Show people born beetwen dates A and B (dates in format XXXX-MM-DD)
+`python command_line_interface.py show_people_born_between_dates A B`
 
 * Show the most secure password/passwords (passwords with highest points value)
 `python command_line_interface.py get_best_passwords`
