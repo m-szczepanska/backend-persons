@@ -7,6 +7,7 @@ import re
 from models import Person, Location
 from calculate_password_points import get_best_passwords
 
+
 # female percentage in population
 def female_percentage():
     p_all = Person.select()
@@ -49,7 +50,8 @@ def most_popular_cities(n):
     city_counter = Counter()
     for city in cities_list:
         city_counter[city] += 1
-        print(city_counter.most_common(n))
+    for city in city_counter.most_common(n):
+        print(f'{city[0]}, {city[1]}')
 
 # 'N' most common passwords
 def most_common_password(n):
@@ -59,7 +61,7 @@ def most_common_password(n):
     for password in pass_dict:
         password_counter[password] += 1
     for popular_password in password_counter.most_common(n):
-        print(f'Password "{popular_password[0]}" occured {popular_password[1]}')
+        print(f'{popular_password[0]}, {popular_password[1]}')
 
 # People born before date_before and after date_after
 def show_people_born_before_and_after_date(date_before, date_after):
@@ -86,52 +88,99 @@ def show_people_born_between_dates(date_before, date_after):
         )
     )
     persons = [elem for elem in persons_query]
-    import pdb; pdb.set_trace()
     print(persons)
 
 
-parser = argparse.ArgumentParser(description='Show results.')
+parser = argparse.ArgumentParser(
+    description='Make calculations on the population and show results.'
+)
 
 subparsers = parser.add_subparsers()
-parser_female_percentage = subparsers.add_parser('female_percentage', help='female percentage')
+parser_female_percentage = subparsers.add_parser(
+    'female_percentage', help='female percentage')
 parser_female_percentage.set_defaults(func=female_percentage)
 
-parser_male_percentage = subparsers.add_parser('male_percentage', help='male percentage')
+
+parser_male_percentage = subparsers.add_parser(
+    'male_percentage', help='male percentage')
 parser_male_percentage.set_defaults(func=male_percentage)
 
-parser_female_age_average = subparsers.add_parser('female_age_average', help='average female age in the population')
+
+parser_female_age_average = subparsers.add_parser(
+    'female_age_average', help='average female age in the population')
 parser_female_age_average.set_defaults(func=female_age_average)
 
-parser_male_age_average = subparsers.add_parser('male_age_average', help='average male age in the population')
+
+parser_male_age_average = subparsers.add_parser(
+    'male_age_average', help='average male age in the population')
 parser_male_age_average.set_defaults(func=male_age_average)
 
-parser_people_age_average = subparsers.add_parser('people_age_average', help='average age in the population')
+
+parser_people_age_average = subparsers.add_parser(
+    'people_age_average', help='average age in the population')
 parser_people_age_average.set_defaults(func=people_age_average)
 
-parser_most_common_password = subparsers.add_parser('most_common_password', help='most common password')
-parser_most_common_password.add_argument('n', type=int, help='how many passwords do you want to get')
+
+parser_most_popular_cities = subparsers.add_parser(
+    'most_popular_cities', help='most popular cities')
+parser_most_popular_cities.add_argument(
+    'n', type=int, help='how many cities do you want to get')
+parser_most_popular_cities.set_defaults(func=most_popular_cities)
+
+parser_most_common_password = subparsers.add_parser(
+    'most_common_password', help='most common password')
+parser_most_common_password.add_argument(
+    'n', type=int, help='how many passwords do you want to get')
 parser_most_common_password.set_defaults(func=most_common_password)
 
-parser_show_people_born_before_and_after_date = subparsers.add_parser('show_people_born_before_and_after_date', help='most common password')
-parser_show_people_born_before_and_after_date.add_argument('date_before', type=str, help='insert date before birthday in YYYY-MM-DD format')
-parser_show_people_born_before_and_after_date.add_argument('date_after', type=str, help='insert date after birthday in YYYY-MM-DD format')
-parser_show_people_born_before_and_after_date.set_defaults(func=show_people_born_before_and_after_date)
+parser_show_people_born_before_and_after_date = subparsers.add_parser(
+    'show_people_born_before_and_after_date',
+    help='show people born after date and after another date'
+)
+parser_show_people_born_before_and_after_date.add_argument(
+    'date_before',
+    type=str,
+    help='insert date before birthday in YYYY-MM-DD format'
+)
+parser_show_people_born_before_and_after_date.add_argument(
+    'date_after',
+    type=str,
+    help='insert date after birthday in YYYY-MM-DD format'
+)
+parser_show_people_born_before_and_after_date.set_defaults(
+    func=show_people_born_before_and_after_date)
 
-parser_show_people_born_between_dates = subparsers.add_parser('show_people_born_between_dates', help='show people born between given dates')
-parser_show_people_born_between_dates.add_argument('date_after', type=str, help='insert date after birthday in YYYY-MM-DD format')
-parser_show_people_born_between_dates.add_argument('date_before', type=str, help='insert date before birthday in YYYY-MM-DD format')
-parser_show_people_born_between_dates.set_defaults(func=show_people_born_between_dates)
+parser_show_people_born_between_dates = subparsers.add_parser(
+    'show_people_born_between_dates',
+    help='show people born between given dates'
+)
+parser_show_people_born_between_dates.add_argument(
+    'date_after',
+    type=str,
+    help='insert date after birthday in YYYY-MM-DD format'
+)
+parser_show_people_born_between_dates.add_argument(
+    'date_before',
+    type=str,
+    help='insert date before birthday in YYYY-MM-DD format'
+)
+parser_show_people_born_between_dates.set_defaults(
+    func=show_people_born_between_dates)
 
-parser_best_password = subparsers.add_parser('get_best_passwords', help='show passwords with the highest poinst value')
+parser_best_password = subparsers.add_parser(
+    'get_best_passwords', help='show passwords with the highest poinst value')
 parser_best_password.set_defaults(func=get_best_passwords)
 
 
 
 options = parser.parse_args()
 
-if options.func.__name__ == 'show_people_born_before_and_after_date' or options.func.__name__ == 'show_people_born_between_dates':
+if options.func.__name__ in [
+    'show_people_born_before_and_after_date',
+    'show_people_born_between_dates'
+    ]:
     options.func(options.date_before, options.date_after)
-elif options.func.__name__ == 'most_common_password' or options.func.__name__ == 'most_popular_cities':
+elif options.func.__name__ in ['most_common_password','most_popular_cities']:
     options.func(options.n)
 else:
     options.func()
